@@ -1,6 +1,6 @@
 [package]
 name = "reed-solomon-simd"
-version = "0.1.0"
+version = "2.0.0"
 license = "MIT AND BSD-3-Clause"
 description = "Reed-Solomon coding with O(n log n) complexity. Leverages AVX2 or SSSE3 on x86(-64)."
 repository = "https://github.com/AndersTrier/reed-solomon-simd"
