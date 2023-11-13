@@ -110,7 +110,7 @@ pub fn sub_mod(x: GfElement, y: GfElement) -> GfElement {
 /// # Examples
 ///
 /// ```rust
-/// use reed_solomon_16::engine;
+/// use reed_solomon_simd::engine;
 ///
 /// assert_eq!(engine::checked_next_multiple_of(20, 10), Some(20));
 /// assert_eq!(engine::checked_next_multiple_of(27, 10), Some(30));

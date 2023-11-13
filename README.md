@@ -1,4 +1,4 @@
-# reed-solomon-16
+# reed-solomon-simd
 
 A library for Reed-Solomon `GF(2^16)` erasure coding, featuring:
 
@@ -12,8 +12,8 @@ A library for Reed-Solomon `GF(2^16)` erasure coding, featuring:
 1. Divide data into equal-sized original shards.
    Shard size must be multiple of 64 bytes.
 2. Decide how many recovery shards you want.
-3. Generate recovery shards with [`reed_solomon_16::encode`].
-4. When some original shards get lost, restore them with [`reed_solomon_16::decode`].
+3. Generate recovery shards with [`reed_solomon_simd::encode`].
+4. When some original shards get lost, restore them with [`reed_solomon_simd::decode`].
     - You must provide at least as many shards as there were original shards in total,
       in any combination of original shards and recovery shards.
 
@@ -30,13 +30,13 @@ let original = [
     b"nim ad minim veniam, quis nostrud exercitation ullamco laboris n",
 ];
 
-let recovery = reed_solomon_16::encode(
+let recovery = reed_solomon_simd::encode(
     3, // total number of original shards
     5, // total number of recovery shards
     original, // all original shards
 )?;
 
-let restored = reed_solomon_16::decode(
+let restored = reed_solomon_simd::decode(
     3, // total number of original shards
     5, // total number of recovery shards
     [  // provided original shards with indexes
@@ -50,7 +50,7 @@ let restored = reed_solomon_16::decode(
 
 assert_eq!(restored[&0], original[0]);
 assert_eq!(restored[&2], original[2]);
-# Ok::<(), reed_solomon_16::Error>(())
+# Ok::<(), reed_solomon_simd::Error>(())
 ```
 
 ## Basic usage
@@ -61,7 +61,7 @@ of the encoding/decoding process.
 Here's the above example using these instead:
 
 ```rust
-use reed_solomon_16::{ReedSolomonDecoder, ReedSolomonEncoder};
+use reed_solomon_simd::{ReedSolomonDecoder, ReedSolomonEncoder};
 use std::collections::HashMap;
 
 let original = [
@@ -98,7 +98,7 @@ let restored: HashMap<_, _> = result.restored_original_iter().collect();
 
 assert_eq!(restored[&0], original[0]);
 assert_eq!(restored[&2], original[2]);
-# Ok::<(), reed_solomon_16::Error>(())
+# Ok::<(), reed_solomon_simd::Error>(())
 ```
 
 ## Advanced usage
@@ -167,22 +167,22 @@ This crate is based on [Leopard-RS] by Christopher A. Taylor.
 
 [Leopard-RS]: https://github.com/catid/leopard
 
-[`Naive`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/engine/struct.Naive.html
-[`NoSimd`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/engine/struct.NoSimd.html
+[`Naive`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/struct.Naive.html
+[`NoSimd`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/struct.NoSimd.html
 
-[`ReedSolomonEncoder`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/struct.ReedSolomonEncoder.html
-[RSE::add_original_shard]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/struct.ReedSolomonEncoder.html#method.add_original_shard
-[RSE::encode]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/struct.ReedSolomonEncoder.html#method.encode
+[`ReedSolomonEncoder`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonEncoder.html
+[RSE::add_original_shard]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonEncoder.html#method.add_original_shard
+[RSE::encode]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonEncoder.html#method.encode
 
-[`ReedSolomonDecoder`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/struct.ReedSolomonDecoder.html
-[RSD::add_original_shard]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/struct.ReedSolomonDecoder.html#method.add_original_shard
-[RSD::add_recovery_shard]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/struct.ReedSolomonDecoder.html#method.add_recovery_shard
-[RSD::decode]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/struct.ReedSolomonDecoder.html#method.decode
+[`ReedSolomonDecoder`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonDecoder.html
+[RSD::add_original_shard]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonDecoder.html#method.add_original_shard
+[RSD::add_recovery_shard]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonDecoder.html#method.add_recovery_shard
+[RSD::decode]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonDecoder.html#method.decode
 
-[`Engine`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/engine/trait.Engine.html
-[`Rate`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/rate/trait.Rate.html
+[`Engine`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/trait.Engine.html
+[`Rate`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/rate/trait.Rate.html
 
-[mod:rate]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/rate/index.html
+[mod:rate]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/rate/index.html
 
-[`reed_solomon_16::encode`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/fn.encode.html
-[`reed_solomon_16::decode`]: https://docs.rs/reed-solomon-16/0.1.0/reed_solomon_16/fn.decode.html
+[`reed_solomon_simd::encode`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/fn.encode.html
+[`reed_solomon_simd::decode`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/fn.decode.html

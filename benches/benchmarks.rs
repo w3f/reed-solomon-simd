@@ -2,7 +2,7 @@ use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criteri
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
-use reed_solomon_16::{
+use reed_solomon_simd::{
     engine::{DefaultEngine, Engine, GfElement, Naive, NoSimd, ShardsRefMut, GF_ORDER},
     rate::{
         HighRateDecoder, HighRateEncoder, LowRateDecoder, LowRateEncoder, RateDecoder, RateEncoder,
@@ -51,7 +51,8 @@ fn benchmarks_main(c: &mut Criterion) {
         }
 
         let original = generate_shards(original_count, SHARD_BYTES, 0);
-        let recovery = reed_solomon_16::encode(original_count, recovery_count, &original).unwrap();
+        let recovery =
+            reed_solomon_simd::encode(original_count, recovery_count, &original).unwrap();
 
         group.throughput(Throughput::Bytes(
             ((original_count + recovery_count) * SHARD_BYTES) as u64,
@@ -136,7 +137,8 @@ fn benchmarks_rate_one<E: Engine>(c: &mut Criterion, name: &str, engine: E) {
         (2048, 2048),
     ] {
         let original = generate_shards(original_count, SHARD_BYTES, 0);
-        let recovery = reed_solomon_16::encode(original_count, recovery_count, &original).unwrap();
+        let recovery =
+            reed_solomon_simd::encode(original_count, recovery_count, &original).unwrap();
 
         group.throughput(Throughput::Bytes(
             ((original_count + recovery_count) * SHARD_BYTES) as u64,

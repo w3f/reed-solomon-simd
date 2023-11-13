@@ -3,7 +3,7 @@ use std::{env, error::Error, fs, path::PathBuf};
 // ======================================================================
 // CONST
 
-const CRATE_NAME: &str = "reed_solomon_16";
+const CRATE_NAME: &str = "reed_solomon_simd";
 
 // ======================================================================
 // MAIN

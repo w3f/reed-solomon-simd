@@ -1,9 +1,9 @@
 [package]
-name = "reed-solomon-16"
+name = "reed-solomon-simd"
 version = "0.1.0"
 license = "MIT AND BSD-3-Clause"
 description = "Reed-Solomon GF(2^16) erasure coding with O(n log n) complexity"
-repository = "https://github.com/malaire/reed-solomon-16"
+repository = "https://github.com/AndersTrier/reed-solomon-simd"
 keywords = [ "erasure", "reed-solomon" ]
 categories = [ "algorithms" ]
 edition = "2021"

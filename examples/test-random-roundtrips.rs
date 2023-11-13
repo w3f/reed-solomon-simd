@@ -1,7 +1,7 @@
 use fixedbitset::FixedBitSet;
 use rand::Rng;
 
-use reed_solomon_16::{
+use reed_solomon_simd::{
     engine::{Engine, Naive, NoSimd, GF_ORDER},
     rate::{
         DecoderWork, DefaultRate, EncoderWork, HighRate, LowRate, Rate, RateDecoder, RateEncoder,
