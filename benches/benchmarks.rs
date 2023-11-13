@@ -10,6 +10,9 @@ use reed_solomon_simd::{
     ReedSolomonDecoder, ReedSolomonEncoder,
 };
 
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+use reed_solomon_simd::engine::{Avx2, Ssse3};
+
 // ======================================================================
 // CONST
 
@@ -270,6 +273,16 @@ fn benchmarks_rate_one<E: Engine>(c: &mut Criterion, name: &str, engine: E) {
 fn benchmarks_engine(c: &mut Criterion) {
     benchmarks_engine_one(c, "engine-Naive", Naive::new());
     benchmarks_engine_one(c, "engine-NoSimd", NoSimd::new());
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        if is_x86_feature_detected!("ssse3") {
+            benchmarks_engine_one(c, "engine-Ssse3", Ssse3::new());
+        }
+        if is_x86_feature_detected!("avx2") {
+            benchmarks_engine_one(c, "engine-Avx2", Avx2::new());
+        }
+    }
 }
 
 fn benchmarks_engine_one<E: Engine>(c: &mut Criterion, name: &str, engine: E) {
