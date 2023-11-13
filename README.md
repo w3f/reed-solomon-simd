@@ -1,11 +1,12 @@
 # reed-solomon-simd
 
-A library for Reed-Solomon `GF(2^16)` erasure coding, featuring:
+Reed-Solomon erasure coding, featuring:
 
-- `O(n log n)` complexity.
 - Any combination of 1 - 32768 original shards with 1 - 32768 recovery shards.
-- Up to 65535 original or recovery shards with some limitations.
-- SIMD optimizations are planned, but not yet implemented.
+- `O(n log n)` complexity.
+- Runtime selection of best SIMD implementation for x86(-64) (SSSE3 and AVX2) with
+fallback to plain Rust.
+- Entirely written in Rust.
 
 ## Simple usage
 
@@ -156,19 +157,20 @@ Use `cargo test -- --ignored` to run those.
 
 ## Safety
 
-This crate doesn't currently use any `unsafe` code.
-
-However planned SIMD-optimized engines will need to use `unsafe`,
-but the intention is that nothing else will use `unsafe`.
+This crate only uses `unsafe` code in the [`Ssse3`] and [`Avx2`] [`Engine`]s.
 
 ## Credits
 
-This crate is based on [Leopard-RS] by Christopher A. Taylor.
+This crate is a fork Markus Laire's [reed-solomon-16] crate, which in turn
+is based on [Leopard-RS] by Christopher A. Taylor.
 
+[reed-solomon-16]: https://crates.io/crates/reed-solomon-16
 [Leopard-RS]: https://github.com/catid/leopard
 
 [`Naive`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/struct.Naive.html
 [`NoSimd`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/struct.NoSimd.html
+[`Ssse3`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/struct.Ssse3.html
+[`Avx2`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/struct.Avx2.html
 
 [`ReedSolomonEncoder`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonEncoder.html
 [RSE::add_original_shard]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/struct.ReedSolomonEncoder.html#method.add_original_shard
