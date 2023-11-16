@@ -47,11 +47,13 @@ pub(crate) use self::shards::Shards;
 pub use self::{engine_naive::Naive, engine_nosimd::NoSimd, shards::ShardsRefMut};
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
-pub use self::engine_ssse3::Ssse3;
+pub use self::{engine_avx2::Avx2, engine_ssse3::Ssse3};
 
 mod engine_naive;
 mod engine_nosimd;
 
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+mod engine_avx2;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod engine_ssse3;
 
