@@ -81,18 +81,14 @@ impl<E: Engine> Rate<E> for DefaultRate<E> {
 // ======================================================================
 // InnerEncoder - PRIVATE
 
+#[derive(Default)]
 enum InnerEncoder<E: Engine> {
     High(HighRateEncoder<E>),
     Low(LowRateEncoder<E>),
 
     // This is only used temporarily during `reset`, never anywhere else.
+    #[default]
     None,
-}
-
-impl<E: Engine> Default for InnerEncoder<E> {
-    fn default() -> Self {
-        InnerEncoder::None
-    }
 }
 
 // ======================================================================
@@ -213,18 +209,14 @@ impl<E: Engine> RateEncoder<E> for DefaultRateEncoder<E> {
 // ======================================================================
 // InnerDecoder - PRIVATE
 
+#[derive(Default)]
 enum InnerDecoder<E: Engine> {
     High(HighRateDecoder<E>),
     Low(LowRateDecoder<E>),
 
     // This is only used temporarily during `reset`, never anywhere else.
+    #[default]
     None,
-}
-
-impl<E: Engine> Default for InnerDecoder<E> {
-    fn default() -> Self {
-        InnerDecoder::None
-    }
 }
 
 // ======================================================================
