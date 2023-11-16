@@ -140,13 +140,15 @@ using chosen [`Engine`] and [`Rate`].
 ## Benchmarks against other crates
 
 Use `cargo run --release --example quick-comparison`
-to run few simple benchmarks against [`reed-solomon-erasure`]
+to run few simple benchmarks against [`reed-solomon-16`], [`reed-solomon-erasure`]
 and [`reed-solomon-novelpoly`] crates.
 
-This crate is fastest when shard count exceeds 256 shards,
-except for one-time initialization (< 10 ms)
+This crate is the fastest in all cases on my AMD Ryzen 5 3600, except in the
+case of decoding with about 42 or fewer recovery shards.
+There's also a one-time initialization (< 10 ms) for computing tables
 which can dominate at really small data amounts.
 
+[`reed-solomon-16`]: https://crates.io/crates/reed-solomon-16
 [`reed-solomon-erasure`]: https://crates.io/crates/reed-solomon-erasure
 [`reed-solomon-novelpoly`]: https://crates.io/crates/reed-solomon-novelpoly
 
@@ -161,10 +163,9 @@ This crate only uses `unsafe` code in the [`Ssse3`] and [`Avx2`] [`Engine`]s.
 
 ## Credits
 
-This crate is a fork Markus Laire's [reed-solomon-16] crate, which in turn
+This crate is a fork Markus Laire's [`reed-solomon-16`] crate, which in turn
 is based on [Leopard-RS] by Christopher A. Taylor.
 
-[reed-solomon-16]: https://crates.io/crates/reed-solomon-16
 [Leopard-RS]: https://github.com/catid/leopard
 
 [`Naive`]: https://docs.rs/reed-solomon-simd/0.1.0/reed_solomon_simd/engine/struct.Naive.html

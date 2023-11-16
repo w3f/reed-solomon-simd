@@ -5,7 +5,6 @@ use rand_chacha::ChaCha8Rng;
 use reed_solomon_erasure::galois_16::ReedSolomon as ReedSolomon16;
 use reed_solomon_erasure::galois_8::ReedSolomon as ReedSolomon8;
 use reed_solomon_novelpoly::{CodeParams, WrappedShard};
-use reed_solomon_simd::engine::DefaultEngine;
 
 // ======================================================================
 // CONST
@@ -22,6 +21,7 @@ fn main() {
     for count in [32, 64, 128, 256, 512, 1024, 4 * 1024, 32 * 1024] {
         println!("\n{}:{} ({} kiB)", count, count, SHARD_BYTES / 1024);
         test_reed_solomon_simd(count);
+        test_reed_solomon_16(count);
         test_reed_solomon_novelpoly(count);
         if count <= 128 {
             test_reed_solomon_erasure_8(count);
@@ -40,7 +40,7 @@ fn test_reed_solomon_simd(count: usize) {
 
     let start = Instant::now();
     // This initializes all the needed tables.
-    DefaultEngine::new();
+    reed_solomon_simd::engine::DefaultEngine::new();
     let elapsed = start.elapsed();
     print!("> reed-solomon-simd        {:9}", elapsed.as_micros());
 
@@ -67,6 +67,51 @@ fn test_reed_solomon_simd(count: usize) {
 
     let start = Instant::now();
     let restored = reed_solomon_simd::decode(count, count, [(0, ""); 0], decoder_recovery).unwrap();
+    let elapsed = start.elapsed();
+    println!("{:14}", elapsed.as_micros());
+
+    // CHECK
+
+    for i in 0..count {
+        assert_eq!(restored[&i], original[i]);
+    }
+}
+
+// ======================================================================
+// reed-solomon-16
+
+fn test_reed_solomon_16(count: usize) {
+    // INIT
+
+    let start = Instant::now();
+    // This initializes all the needed tables.
+    reed_solomon_16::engine::DefaultEngine::new();
+    let elapsed = start.elapsed();
+    print!("> reed-solomon-16          {:9}", elapsed.as_micros());
+
+    // CREATE ORIGINAL
+
+    let mut original = vec![vec![0u8; SHARD_BYTES]; count];
+    let mut rng = ChaCha8Rng::from_seed([0; 32]);
+    for original in &mut original {
+        rng.fill::<[u8]>(original);
+    }
+
+    // ENCODE
+
+    let start = Instant::now();
+    let recovery = reed_solomon_16::encode(count, count, &original).unwrap();
+    let elapsed = start.elapsed();
+    print!("{:14}", elapsed.as_micros());
+
+    // PREPARE DECODE
+
+    let decoder_recovery: Vec<_> = recovery.iter().enumerate().collect();
+
+    // DECODE
+
+    let start = Instant::now();
+    let restored = reed_solomon_16::decode(count, count, [(0, ""); 0], decoder_recovery).unwrap();
     let elapsed = start.elapsed();
     println!("{:14}", elapsed.as_micros());
 
