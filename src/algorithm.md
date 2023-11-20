@@ -31,32 +31,6 @@ A shard then consists of one or more of these 64-byte blocks:
 [ low_0, ..., low_31, high_0, ..., high_31, low_32, ..., low_63, high_32, ..., high_63, ... ]
 ```
 
-## Original shards and recovery shards
-
-- The data which is going to be protected by Reed-Solomon erasure coding
-  is split into equal-sized **original shards**.
-    - **`original_count`** is the number of original shards.
-- Additional **recovery shards** of same size are then created
-  which contain recovery data so that original data can be fully restored
-  from any set of **`original_count`** shards, original or recovery.
-    - **`recovery_count`** is the number of recovery shards.
-
-Algorithm supports any combination of
-1 - 32768 original shards with 1 - 32768 recovery shards.
-Up to 65535 original or recovery shards is also possible with following limitations:
-
-| `original_count` | `recovery_count` |
-| ---------------- | ---------------- |
-| `<= 2^16 - 2^n`  | `<= 2^n`         |
-| `<= 61440`       | `<= 4096`        |
-| `<= 57344`       | `<= 8192`        |
-| `<= 49152`       | `<= 16384`       |
-| **`<= 32768`**   | **`<= 32768`**   |
-| `<= 16384`       | `<= 49152`       |
-| `<= 8192`        | `<= 57344`       |
-| `<= 4096`        | `<= 61440`       |
-| `<= 2^n`         | `<= 2^16 - 2^n`  |
-
 # Rate
 
 Encoding and decoding both have two variations:
