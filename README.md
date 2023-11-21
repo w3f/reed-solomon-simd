@@ -4,7 +4,7 @@ Reed-Solomon erasure coding, featuring:
 
 - Up to 65535 original shards or 65535 recovery shards.
 - `O(n log n)` complexity.
-- Runtime selection of best SIMD implementation for x86(-64) (SSSE3 and AVX2) with
+- Runtime selection of best SIMD implementation on both AArch64 (Neon) and x86(-64) (SSSE3 and AVX2) with
 fallback to plain Rust.
 - Entirely written in Rust.
 
@@ -48,6 +48,7 @@ Up to 65535 original or recovery shards is also possible with following limitati
 | 32 768 : 32 768     | 1.4868 GiB/s | 621.78 MiB/s ; 603.40 MiB/s |
 
 - Single core AVX2 on an AMD Ryzen 5 3600 (Zen 2, 2019).
+- On an Apple Silicon M1 CPU throughput is about the same (+-10%).
 - MiB/s and GiB/s are w.r.t the total amount of data,
   i.e. original shards + recovery shards.
     - For decoder this includes missing shards.
@@ -189,7 +190,7 @@ Use `cargo test -- --ignored` to run those.
 
 ## Safety
 
-This crate only uses `unsafe` code in the [`Ssse3`] and [`Avx2`] [`Engine`]s.
+The only use of `unsafe` in this crate is to allow for target specific optimizations in [`Ssse3`], [`Avx2`] and [`Neon`].
 
 ## Credits
 
@@ -203,6 +204,7 @@ is based on [Leopard-RS] by Christopher A. Taylor.
 [`NoSimd`]: https://docs.rs/reed-solomon-simd/2.0.0/reed_solomon_simd/engine/struct.NoSimd.html
 [`Ssse3`]: https://docs.rs/reed-solomon-simd/2.0.0/reed_solomon_simd/engine/struct.Ssse3.html
 [`Avx2`]: https://docs.rs/reed-solomon-simd/2.0.0/reed_solomon_simd/engine/struct.Avx2.html
+[`Neon`]: https://docs.rs/reed-solomon-simd/2.0.0/reed_solomon_simd/engine/struct.Neon.html
 
 [`ReedSolomonEncoder`]: https://docs.rs/reed-solomon-simd/2.0.0/reed_solomon_simd/struct.ReedSolomonEncoder.html
 [RSE::add_original_shard]: https://docs.rs/reed-solomon-simd/2.0.0/reed_solomon_simd/struct.ReedSolomonEncoder.html#method.add_original_shard
