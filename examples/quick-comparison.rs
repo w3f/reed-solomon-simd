@@ -9,7 +9,8 @@ use reed_solomon_novelpoly::{CodeParams, WrappedShard};
 // ======================================================================
 // CONST
 
-const SHARD_BYTES: usize = 1024;
+const SHARD_BYTES: usize = 1048576; //1024;
+const DATA_BYTES: usize = 16777216;
 
 // ======================================================================
 // MAIN
@@ -23,17 +24,65 @@ fn main() {
     println!("                           µs (init)   µs (encode)   µs (decode)");
     println!("                           ---------   -----------   -----------");
 
-    for count in [32, 64, 128, 256, 512, 1024, 4 * 1024, 32 * 1024] {
-        println!("\n{}:{} ({} kiB)", count, count, SHARD_BYTES / 1024);
-        test_reed_solomon_simd(count);
-        test_reed_solomon_16(count);
-        test_reed_solomon_novelpoly(count);
-        if count <= 128 {
-            test_reed_solomon_erasure_8(count);
-        }
-        if count <= 512 {
-            test_reed_solomon_erasure_16(count);
-        }
+    for count in [32, 64, 128, 256, 341, 342, 512, 1024, 4 * 1024, 16 * 1024] {
+        println!("\n{}:{} ({} MB)", count, 2 * count, DATA_BYTES / 1048576);//SHARD_BYTES / 1024);
+        test_reed_solomon_simd_constant_size_data(count, DATA_BYTES);
+        // test_reed_solomon_simd(count);
+        // test_reed_solomon_16(count);
+        // test_reed_solomon_novelpoly(count);
+        // if count <= 128 {
+        //     test_reed_solomon_erasure_8(count);
+        // }
+        // if count <= 512 {
+        //     test_reed_solomon_erasure_16(count);
+        // }
+    }
+}
+
+
+// ======================================================================
+// reed-solomon-simd
+
+fn test_reed_solomon_simd_constant_size_data(count: usize, data_size: usize) {
+    // INIT
+
+    let start = Instant::now();
+    // This initializes all the needed tables.
+    reed_solomon_simd::engine::DefaultEngine::new();
+    let elapsed = start.elapsed();
+    print!("> reed-solomon-simd        {:9}", elapsed.as_micros());
+
+    // CREATE ORIGINAL
+    let shard_bytes : usize = ((((data_size + count - 1) / count) + 64 - 1) / 64) * 64;
+
+    let mut original = vec![vec![0u8; shard_bytes]; count];
+    let mut rng = ChaCha8Rng::from_seed([0; 32]);
+    for original in &mut original {
+        rng.fill::<[u8]>(original);
+    }
+
+    // ENCODE
+
+    let start = Instant::now();
+    let recovery = reed_solomon_simd::encode(count, 2 * count, &original).unwrap();
+    let elapsed = start.elapsed();
+    print!("{:14}", elapsed.as_micros());
+
+    // PREPARE DECODE
+
+    let decoder_recovery: Vec<_> = recovery.iter().enumerate().collect();
+
+    // DECODE
+
+    let start = Instant::now();
+    let restored = reed_solomon_simd::decode(count, 2 * count, [(0, ""); 0], decoder_recovery).unwrap();
+    let elapsed = start.elapsed();
+    println!("{:14}", elapsed.as_micros());
+
+    // CHECK
+
+    for i in 0..count {
+        assert_eq!(restored[&i], original[i]);
     }
 }
 
